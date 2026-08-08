@@ -1,6 +1,5 @@
 .venv
 data
 __pycache__
-checkpoints
 results
 .vscode
