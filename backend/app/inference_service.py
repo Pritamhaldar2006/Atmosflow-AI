@@ -1,4 +1,4 @@
-"""Safe adapter between the web API and ChronoCloud's existing model."""
+"""Safe adapter between the web API and CloudMotion AI's existing model."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import torch.nn.functional as F
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_CHECKPOINT = PROJECT_ROOT / "checkpoints" / "liteRIFE_epoch39.pt"
+DEFAULT_CHECKPOINT = PROJECT_ROOT / "backend" / "checkpoints" / "liteRIFE_epoch39.pt"
 
 
 class InferenceService:

@@ -1,4 +1,4 @@
-# ChronoCloud frontend
+# CloudMotion AI frontend
 
 ## Run
 

@@ -1,1 +1,1 @@
-"""ChronoCloud web API package."""
+"""CloudMotion AI web API package."""
