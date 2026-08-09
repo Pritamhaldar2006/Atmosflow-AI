@@ -127,3 +127,5 @@ For a GPU-equipped Colab environment, the same scripts can be run with `/content
 ## Evaluation ideas
 
 Evaluate against held-out true middle frames using PSNR and SSIM, and compare with classical optical-flow baselines such as Farneback or TV-L1. For weather-focused validation, also measure system-specific motion error, such as cyclone-eye displacement or convective-cell centroid drift.
+## The Sample Output of the The Predicted Image Frame Is
+<img width="1600" height="554" alt="image" src="https://github.com/user-attachments/assets/dc2d1351-8606-4f5a-a647-c1e352f69fc9" />
