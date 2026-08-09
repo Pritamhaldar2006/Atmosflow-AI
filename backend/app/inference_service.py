@@ -1,4 +1,4 @@
-"""Safe adapter between the web API and CloudMotion AI's existing model."""
+"""Safe adapter between the web API and AtmosFlow AI's existing model."""
 
 from __future__ import annotations
 

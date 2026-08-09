@@ -1,4 +1,4 @@
-"""FastAPI application for local CloudMotion AI inference."""
+"""FastAPI application for local AtmosFlow AI inference."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="CloudMotion AI API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="AtmosFlow AI API", version="0.1.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],

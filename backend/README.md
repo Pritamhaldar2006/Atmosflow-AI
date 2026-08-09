@@ -1,6 +1,6 @@
-# CloudMotion AI local API
+# AtmosFlow AI local API
 
-This is an additive wrapper around the existing CloudMotion AI inference code. It does not change `model.py` or `inference.py`.
+This is an additive wrapper around the existing AtmosFlow AI inference code. It does not change `model.py` or `inference.py`.
 
 The deployed model is stored at `backend/checkpoints/liteRIFE_epoch39.pt`. Commit this file with the repository so the API can load it at startup.
 
