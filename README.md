@@ -1,6 +1,6 @@
-# CloudMotion AI
+# AtmosFlow AI
 
-CloudMotion AI creates intermediate geostationary-satellite frames between two scans. It uses a compact RIFE-inspired PyTorch model that estimates bidirectional motion, fuses warped input frames, and applies residual refinement to model non-rigid cloud movement.
+AtmosFlow AI creates intermediate geostationary-satellite frames between two scans. It uses a compact RIFE-inspired PyTorch model that estimates bidirectional motion, fuses warped input frames, and applies residual refinement to model non-rigid cloud movement.
 
 The project includes both the research pipeline and a local web application. The web app accepts `.npy`, PNG, and JPEG inputs, generates one or more intermediate frames, and automatically creates a looping GIF.
 
@@ -23,7 +23,7 @@ Open two PowerShell terminals in the project folder.
 ### 1. Start the API
 
 ```powershell
-cd "<path-to-your-CloudMotion-AI-project>"
+cd "<path-to-your-AtmosFlow-AI-project>"
 .\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
 .\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --reload --port 8000
 ```
@@ -33,7 +33,7 @@ The API starts at `http://localhost:8000`. Its interactive API documentation is 
 ### 2. Start the frontend
 
 ```powershell
-cd "<path-to-your-CloudMotion-AI-project>\frontend"
+cd "<path-to-your-AtmosFlow-AI-project>\frontend"
 npm install
 npm run dev
 ```

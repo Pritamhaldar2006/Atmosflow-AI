@@ -1,4 +1,4 @@
-# CloudMotion AI frontend
+# AtmosFlow AI frontend
 
 ## Run
 

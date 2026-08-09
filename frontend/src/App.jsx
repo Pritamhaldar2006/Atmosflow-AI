@@ -63,7 +63,7 @@ export default function App() {
     <main>
       <section className="hero">
         <p className="eyebrow">SATELLITE FRAME INTERPOLATION</p>
-        <h1>CloudMotion AI</h1>
+        <h1>AtmosFlow AI</h1>
         <p>Generate cloud-motion frames between two geostationary satellite scans.</p>
       </section>
 
