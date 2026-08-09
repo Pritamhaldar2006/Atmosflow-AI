@@ -8,6 +8,8 @@ The project includes both the research pipeline and a local web application. The
 [Click here to watch the project demo video](https://drive.google.com/file/d/10rRqM8v03o-8C2ThAGjlXBPnxobIBdJJ/view?usp=sharing)
 ## Features
 
+# Sample Website View
+<img width="1479" height="840" alt="image" src="https://github.com/user-attachments/assets/51792c7c-1595-4277-9916-9c53fdd951aa" />
 
 
 - Interpolates cloud-motion frames between two satellite images
