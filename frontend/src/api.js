@@ -1,4 +1,7 @@
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+// The production image serves the UI and API from one origin.  Keeping the
+// local default preserves the two-process development workflow described in
+// the README, while VITE_API_URL remains available for split deployments.
+const API_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? "http://localhost:8000" : "");
 
 export async function generateFrames(frame0, frame1, numIntermediate) {
   const payload = new FormData();

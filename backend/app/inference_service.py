@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import os
 import threading
 
 import numpy as np
@@ -13,6 +14,7 @@ import torch.nn.functional as F
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CHECKPOINT = PROJECT_ROOT / "backend" / "checkpoints" / "liteRIFE_epoch39.pt"
+MAX_INPUT_PIXELS = int(os.getenv("MAX_INPUT_PIXELS", "16000000"))
 
 
 class InferenceService:
@@ -54,11 +56,18 @@ class InferenceService:
                 # RGB/RGBA images are converted to luminance because the
                 # supplied LiteRIFE checkpoint accepts one input channel.
                 with Image.open(path) as image:
+                    width, height = image.size
+                    if width * height > MAX_INPUT_PIXELS:
+                        raise ValueError(
+                            f"Each image must contain at most {MAX_INPUT_PIXELS:,} pixels."
+                        )
                     array = np.asarray(image.convert("L"), dtype=np.float32)[None, ...] / 255.0
             except (OSError, UnidentifiedImageError) as exc:
                 raise ValueError("The uploaded image could not be read.") from exc
         if array.ndim != 3 or array.shape[0] != 1:
             raise ValueError("Each upload must resolve to a single-channel 2D frame.")
+        if array.shape[1] * array.shape[2] > MAX_INPUT_PIXELS:
+            raise ValueError(f"Each frame must contain at most {MAX_INPUT_PIXELS:,} pixels.")
         if not np.isfinite(array).all():
             array = np.nan_to_num(array, nan=0.0, posinf=1.0, neginf=0.0)
         return np.clip(array, 0.0, 1.0)

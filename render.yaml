@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: atmosflow-ai
+    runtime: docker
+    healthCheckPath: /health
+    envVars:
+      - key: MAX_UPLOAD_BYTES
+        value: 20971520
+      - key: MAX_INPUT_PIXELS
+        value: 16000000
+      - key: RESULTS_TTL_SECONDS
+        value: 3600

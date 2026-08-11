@@ -46,6 +46,33 @@ npm run dev
 
 Open the address Vite displays, usually `http://localhost:5173`.
 
+## Deploy with Docker or Render
+
+The repository includes a production `Dockerfile` that builds the React app and
+serves it from the FastAPI service. The browser and API therefore use the same
+origin; no production `VITE_API_URL` is needed.
+
+Build and run it locally:
+
+```powershell
+docker build -t atmosflow-ai .
+docker run --rm -p 8000:8000 -e PORT=8000 atmosflow-ai
+```
+
+Then open `http://localhost:8000`; use `http://localhost:8000/health` for the
+service health check.
+
+To deploy on Render, push this repository and create a Blueprint from
+`render.yaml`. It builds the Docker image and configures `/health` as the health
+check. The supplied defaults cap each upload at 20 MB, reject frames larger than
+16 million pixels, and remove generated results after one hour. Set the values
+in `.env.example` in the host dashboard if you need different limits.
+
+The included storage is temporary: generated GIFs, PNGs, and NumPy files are
+not durable across restarts or multi-instance deployments. For persistent or
+high-volume use, store results in object storage and put rate limiting in front
+of the service.
+
 ### 3. Generate an animation
 
 1. Upload an earlier and later satellite frame.
