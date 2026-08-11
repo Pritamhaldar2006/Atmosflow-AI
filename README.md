@@ -1,10 +1,16 @@
+
 # AtmosFlow AI
 
 AtmosFlow AI creates intermediate geostationary-satellite frames between two scans. It uses a compact RIFE-inspired PyTorch model that estimates bidirectional motion, fuses warped input frames, and applies residual refinement to model non-rigid cloud movement.
 
 The project includes both the research pipeline and a local web application. The web app accepts `.npy`, PNG, and JPEG inputs, generates one or more intermediate frames, and automatically creates a looping GIF.
 
+[Click here to watch the project demo video](https://drive.google.com/file/d/10rRqM8v03o-8C2ThAGjlXBPnxobIBdJJ/view?usp=sharing)
 ## Features
+
+# Sample Website View
+<img width="1479" height="840" alt="image" src="https://github.com/user-attachments/assets/51792c7c-1595-4277-9916-9c53fdd951aa" />
+
 
 - Interpolates cloud-motion frames between two satellite images
 - Uses the supplied `liteRIFE_epoch39.pt` checkpoint for local inference
@@ -123,3 +129,5 @@ For a GPU-equipped Colab environment, the same scripts can be run with `/content
 ## Evaluation ideas
 
 Evaluate against held-out true middle frames using PSNR and SSIM, and compare with classical optical-flow baselines such as Farneback or TV-L1. For weather-focused validation, also measure system-specific motion error, such as cyclone-eye displacement or convective-cell centroid drift.
+## The Sample Output of the The Predicted Image Frame Is
+<img width="1600" height="554" alt="image" src="https://github.com/user-attachments/assets/dc2d1351-8606-4f5a-a647-c1e352f69fc9" />
