@@ -33,7 +33,7 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="AtmosFlow AI API", version="0.1.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173","https://atmosflow-ai.onrender.com"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
