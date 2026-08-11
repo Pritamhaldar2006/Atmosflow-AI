@@ -2,6 +2,7 @@ services:
   - type: web
     name: atmosflow-ai
     runtime: docker
+    plan: free
     healthCheckPath: /health
     envVars:
       - key: MAX_UPLOAD_BYTES
