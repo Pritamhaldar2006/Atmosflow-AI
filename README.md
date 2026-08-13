@@ -22,6 +22,22 @@ The project includes both the research pipeline and a local web application. The
 - Matches differing input dimensions by resizing the later image to the first image's size
 - Generates individual PNG previews, downloadable `.npy` frames, and a looping GIF
 - Includes data download, training, inference, and visualization scripts for research workflows
+## Model & Methodology
+
+**Architecture:** LiteRIFE — a custom, RIFE-inspired (Real-time Intermediate Flow
+Estimation) deep learning model built in PyTorch, consisting of a coarse-to-fine
+optical flow estimator, a learned occlusion/fusion mask, and a residual U-Net
+refinement head. Trained from scratch — not a pretrained model.
+
+**Training data:** 300 frames of GOES-19 Band 13 infrared imagery (10-minute
+cadence), sourced from NOAA's public AWS Open Data bucket.
+
+**Training process:** Self-supervised frame interpolation (real middle frames
+serve as ground truth), optimized with a combined L1 + SSIM loss using AdamW
+and cosine annealing. Trained for 40 epochs on a single free-tier Google Colab
+T4 GPU, using mixed precision and gradient accumulation for efficiency.
+
+**Result:** ~29 dB validation PSNR.
 
 ## Quick start: web application
 
