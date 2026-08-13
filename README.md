@@ -24,20 +24,57 @@ The project includes both the research pipeline and a local web application. The
 - Includes data download, training, inference, and visualization scripts for research workflows
 ## Model & Methodology
 
-**Architecture:** LiteRIFE — a custom, RIFE-inspired (Real-time Intermediate Flow
-Estimation) deep learning model built in PyTorch, consisting of a coarse-to-fine
-optical flow estimator, a learned occlusion/fusion mask, and a residual U-Net
-refinement head. Trained from scratch — not a pretrained model.
+### Why not a pretrained model?
 
-**Training data:** 300 frames of GOES-19 Band 13 infrared imagery (10-minute
-cadence), sourced from NOAA's public AWS Open Data bucket.
+Off-the-shelf frame interpolation models like RIFE, FLAVR, and AdaCoF are pretrained on natural video datasets (Vimeo-90K, UCF101) — everyday scenes with rigid objects, consistent lighting, and short-range camera motion. Geostationary satellite imagery violates nearly every one of those assumptions: cloud fields deform non-rigidly, form and dissipate, and change brightness/temperature over time rather than staying visually constant. Given this domain gap, ChronoCloud's model — **LiteRIFE** — was designed and trained from scratch specifically for satellite motion patterns, rather than fine-tuning a natural-video checkpoint.
 
-**Training process:** Self-supervised frame interpolation (real middle frames
-serve as ground truth), optimized with a combined L1 + SSIM loss using AdamW
-and cosine annealing. Trained for 40 epochs on a single free-tier Google Colab
-T4 GPU, using mixed precision and gradient accumulation for efficiency.
+### Architecture
 
-**Result:** ~29 dB validation PSNR.
+LiteRIFE is a compact, RIFE-inspired (Real-time Intermediate Flow Estimation) architecture implemented in PyTorch, built around three cooperating stages:
+
+**1. Coarse-to-fine optical flow estimation (IFBlock × 3)**
+Instead of using a classical, hand-crafted optical flow algorithm (Lucas-Kanade, Farneback, TV-L1), flow is predicted by a stack of three convolutional "IFBlocks" operating at decreasing scales (coarse → fine). Each block refines the flow estimate from the previous scale, allowing the network to capture both large-scale storm-system motion and fine-grained local cloud deformation in the same pass. Flow is predicted bidirectionally — from frame 0 toward the target timestep, and from frame 1 toward it — rather than assuming simple linear motion.
+
+**2. Warping and learned fusion/occlusion masking**
+Both input frames are backward-warped toward the target timestep using the predicted flow. A learned fusion mask then decides, pixel by pixel, how much to trust each warped source. This is critical for weather imagery: a newly-forming convective cell or a dissipating cloud has no valid corresponding pixel to warp from in one of the two source frames, and the mask lets the network downweight that source rather than producing a warping artifact.
+
+**3. Residual refinement network (U-Net)**
+A lightweight encoder-decoder U-Net takes the warped, fused result plus contextual features from both source frames, and predicts a residual correction. This is the component that fixes the blur and ghosting that pure flow-warping leaves behind, and fills in plausible texture in regions the mask flagged as unreliable.
+
+The full model is lightweight by design — roughly 84 trainable parameter tensors — specifically so it can be trained end-to-end on a single consumer GPU rather than requiring institutional compute.
+
+### Training data and preprocessing
+
+- **Source:** GOES-19, NOAA's operational GOES-East satellite, accessed via the public, unauthenticated AWS Open Data S3 bucket (`noaa-goes19`)
+- **Channel:** Band 13 (~10.3 μm, longwave IR "clean window") — chosen because it captures cloud-top temperature in both day and night conditions, unlike visible-light bands
+- **Volume:** 300 full-disk frames at native 10-minute scan cadence
+- **Calibration:** Raw scan data converted to the `CMI` (Cloud and Moisture Imagery) product, which is already radiometrically calibrated to brightness temperature
+- **NaN handling:** Full-disk GOES imagery contains NaN "space" pixels outside the Earth's visible disk; these are excluded from percentile-based normalization and zero-filled post-normalization, to prevent NaN propagation through training
+- **Patching:** Frames are randomly cropped to 256×256 patches per training step, to fit GPU memory constraints while still exposing the model to diverse regional weather patterns across each full-disk image
+
+### Training paradigm
+
+Training is fully **self-supervised** — no manual annotation was required. Given three temporally consecutive real frames (t, t+1, t+2), the model is trained to predict the real middle frame (t+1) from the two outer frames (t and t+2). This is the standard setup for learned frame interpolation: the "label" is simply a real frame that already exists in the sequence, withheld from the model's input.
+
+### Loss function and optimization
+
+- **Loss:** A weighted combination of L1 pixel-reconstruction loss and SSIM (structural similarity) loss — L1 for sharp per-pixel accuracy, SSIM to preserve structural cloud boundaries and texture that pure pixel-wise loss tends to blur
+- **Optimizer:** AdamW with weight decay
+- **Learning rate schedule:** Cosine annealing over the full training run
+- **Mixed precision (AMP):** Used throughout to roughly double effective batch size and speed up training on limited GPU memory
+- **Gradient accumulation:** Used to simulate a larger effective batch size than what fits in memory at once
+
+### Hardware and infrastructure
+
+The entire pipeline — data download, preprocessing, training, and inference — was designed to run end-to-end on a **single free-tier Google Colab T4 GPU (16 GB)**, with no paid compute or institutional cluster access required. Checkpoints are saved incrementally to Google Drive during training to survive Colab's session disconnects.
+
+### Results
+
+After 40 training epochs, the model reached a **validation PSNR of approximately 29 dB**, evaluated on a held-out split of the same GOES-19 dataset. This was benchmarked against the qualitative failure modes typically seen with classical optical flow baselines (Farneback, TV-L1) on the same data — namely blur and ghosting artifacts on deforming, non-rigid cloud motion — which the learned flow + refinement approach visibly reduces.
+
+### Inference
+
+At inference time, the model supports **recursive multi-frame interpolation**: given two real frames, it can generate not just the midpoint but any number of evenly-spaced intermediate frames at arbitrary timestep `t ∈ (0, 1)`, by recursively interpolating between previously generated midpoints. This allows a satellite's native cadence (e.g., 10 or 30 minutes) to be upsampled to an arbitrarily denser synthetic sequence.
 
 ## Quick start: web application
 
